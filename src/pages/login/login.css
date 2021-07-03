@@ -1,0 +1,43 @@
+.login 
+{
+  width: 100%;
+  height: 100%;
+  background-image: url('./images/bg.jpg');
+  background-size: cover;
+}
+.login-header {
+  display: flex;
+  align-items: center;
+  height: 80px;
+  background-color: white;
+}
+
+h1 {
+  font-size: 30px;
+  color:teal;
+}
+
+img {
+  width: 40px;
+  height: 40px;
+  margin-left: 50px;
+  margin-right: 20px;
+}
+
+.login-content {
+  padding: 20px;
+  margin: 50px auto;
+  width: 400px;
+  height: 280px;
+  background-color:white;
+}
+
+h2 {
+  font-size: 25px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.login-form-button {
+  width: 100%;
+}
