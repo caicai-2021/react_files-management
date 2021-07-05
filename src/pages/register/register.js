@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
-import { Form, Input, Select, Row, Col, Button, } from 'antd';
+import { Form, Input, Select, Row, Col, Button, message, } from 'antd';
 import "./register.css"
+import { reqRegister } from '../../api';
+import { Redirect } from 'react-router-dom';
+import memoryUtils from '../../utils/memoryUtils';
 
 const { Option } = Select;
 const formItemLayout = {
@@ -23,9 +26,7 @@ const formItemLayout = {
     },
   };
 
-  const onFinish = (values) => {
-    console.log('Received values of form: ', values);
-  };
+  
 
   const tailFormItemLayout = {
     wrapperCol: {
@@ -39,17 +40,34 @@ const formItemLayout = {
       },
     },
   };
-  
-
 
 
 // import './register.css';//css里进行编译，lcss无法进行转换
 
 export default class Register extends Component{
   
-   
-      
+    onFinish = (values) => {
+        console.log('Received values of form: ', values);
+        this.Getpromise(values);
+      };
+
+// 发送注册通讯请求
+    async Getpromise (data) {
+        const result = await reqRegister (data);
+        console.log(result);
+        if (result.status === 0 )
+        {message.success(result.msg)}
+        // 判定成功，跳转登录界面
+        this.props.history.replace('/login')
+    }
+
     render () {
+        //进行判定如果已经登录，就跳转到管理界面 
+        const user = memoryUtils.user
+        if (user.name){
+            return <Redirect to ='/admin'/>
+        }
+        
         return (
             <div className = "register_back">
                 <div>
@@ -59,9 +77,9 @@ export default class Register extends Component{
                 <h2>Register</h2>
                                 <Form
                     {...formItemLayout}
-                    
+
                     name="register"
-                    onFinish={onFinish}
+                    onFinish={this.onFinish}
                     scrollToFirstError
                     >
                     <Form.Item
@@ -221,11 +239,11 @@ export default class Register extends Component{
                     <Form.Item
                         name="dorm"
                         label="宿舍地址"
-                        tooltip="学生用户请填写该信息"
+                        tooltip="没有请填无"
                         rules={[
                         {
-                            required: false,
-                           
+                            required: true,
+                            whitespace: true
                         }
                         ]}
                     >

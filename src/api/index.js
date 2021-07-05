@@ -47,4 +47,4 @@ import ajax from './ajax'
 // => ajax.post('url',{user_name,password})
 
 
-
+export const reqRegister = (value) => ajax.post('/Register_test',{value})
