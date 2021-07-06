@@ -43,7 +43,9 @@ export default class Admin extends Component{
                 <Layout>
                     <Header/>
                     <Content style ={{backgroundColor :'white'}}>Content</Content>
-                    <Footer>Footer</Footer>
+                    <Footer style = {{textAlign : 'center'}}>
+                    表面与界面研究室出品 服务科研
+                    </Footer>
                 </Layout>
              </Layout>
         )
