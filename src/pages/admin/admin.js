@@ -6,6 +6,18 @@ import { Redirect } from 'react-router-dom';
 // 升级直接从内存中读取
 import memoryUtils from '../../utils/memoryUtils';
 
+
+// 引入左导航布局组件
+import LeftNav from '../../components/left-nav';
+// 引入头部组件
+import Header from '../../components/header';
+
+// 引入布局组件
+import { Layout } from 'antd';
+
+const {  Footer, Sider, Content } = Layout;
+
+
 export default class Admin extends Component{
     
     
@@ -24,9 +36,16 @@ export default class Admin extends Component{
         
 
         return (
-            <div>
-            hello,{user.name}
-            </div>
+            <Layout style = {{height :'100%' }}>
+                <Sider>
+                    <LeftNav/>
+                </Sider>
+                <Layout>
+                    <Header/>
+                    <Content style ={{backgroundColor :'white'}}>Content</Content>
+                    <Footer>Footer</Footer>
+                </Layout>
+             </Layout>
         )
     }
 }
