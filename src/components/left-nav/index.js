@@ -37,7 +37,6 @@ class LeftNav extends Component {
             const cItem =item.children.find(cItem => cItem.key === path)
             if(cItem){
                 this.openKey = item.key
-                console.log(this.openKey)
             }
             return (<SubMenu key={item.key}  title= {item.title}>
                 {this.getMenuNodes(item.children)}
@@ -68,7 +67,7 @@ class LeftNav extends Component {
                 select:总是根据最新指定的key进行显示 */}
                     <Menu
                         theme={this.state.theme}
-                        style={{ width: 200 }}
+                        style={{ width: 200 , height:724}}
                         defaultOpenKeys={[this.openKey]}
                         selectedKeys={[selectKey]}
                         mode="inline"

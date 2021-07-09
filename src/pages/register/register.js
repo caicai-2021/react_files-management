@@ -70,11 +70,8 @@ export default class Register extends Component{
         
         return (
             <div className = "register_back">
-                <div>
-                <h1>header</h1>
-                </div>
                 <div className = "register_content">
-                <h2>Register</h2>
+                <h2 className ="h2">注   册</h2>
                                 <Form
                     {...formItemLayout}
 
