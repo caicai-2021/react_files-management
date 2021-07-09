@@ -62,7 +62,7 @@ export default class Register extends Component{
     }
 
     render () {
-        //进行判定如果已经登录，就跳转到管理界面 
+        // 进行判定如果已经登录，就跳转到管理界面 
         const user = memoryUtils.user
         if (user.name){
             return <Redirect to ='/admin'/>

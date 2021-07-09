@@ -3,7 +3,7 @@ import { Form, Input, Button, message  } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
 import './login.css';//css里进行编译，lcss无法进行转换
-import logo from './images/logo.jpg';
+import logo from '../../assets/images/logo.jpg'
 //引入接口请求函数
 import { reqLogin } from '../../api';
 import { Redirect } from 'react-router-dom';
@@ -38,7 +38,7 @@ export default class Login extends Component {
             // 两种情况内存会有，登录过/或者登录输入
             // 这是也不需要从storage中读，只需要从内存中调用即可
             memoryUtils.user = user
-            this.props.history.replace("/admin")
+            this.props.history.replace("/")
             message.success('登录成功！')
         }
         else
@@ -46,7 +46,6 @@ export default class Login extends Component {
             message.error(result.msg)
         }
     }
-   
     render()  {
         //判定界面的显示情况，记得写在render中
         //读取保存的user，如果存在，直接跳转到管理界面
@@ -109,7 +108,7 @@ export default class Login extends Component {
                                 <Button type="primary" htmlType="submit" className="login-form-button">
                                 登 录
                                 </Button>
-                                <a href="/register">现在注册！</a>
+                                <a href="/register">register now!</a>
                             </Form.Item>
                     </Form>
                 </div>

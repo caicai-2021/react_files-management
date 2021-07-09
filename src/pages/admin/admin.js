@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect , Switch, Route } from 'react-router-dom';
 // 使用封装的模块，使用储存调用一样的功能
 // import storageUtils from '../../utils/storageUtils';
 
@@ -14,6 +14,13 @@ import Header from '../../components/header';
 
 // 引入布局组件
 import { Layout } from 'antd';
+
+import Home from '../home/home';
+import Info from '../info/info';
+import Intro from '../intro/intro';
+import Download from '../files/download';
+import Upload from '../files/upload';
+
 
 const {  Footer, Sider, Content } = Layout;
 
@@ -42,7 +49,17 @@ export default class Admin extends Component{
                 </Sider>
                 <Layout>
                     <Header/>
-                    <Content style ={{backgroundColor :'white'}}>Content</Content>
+                    <Content style ={{backgroundColor :'white'}}>
+                    <Switch>
+                    {/* 大小写都要完全一样 注意要有总的路由图在脑海里 */}
+                        <Route path ='/home' component ={Home}/>
+                        <Route path ='/info' component ={Info}/>
+                        <Route path ='/intro' component ={Intro}/>
+                        <Route path ='/files/upload' component ={Upload}/>
+                        <Route path ='/files/download' component ={Download}/>
+                        <Redirect to = '/home'/>
+                    </Switch>
+                    </Content>
                     <Footer style = {{ textAlign : 'center' , color :'black' ,opacity : 0.5}}>
                     表面与界面研究室出品 服务科研
                     </Footer>
