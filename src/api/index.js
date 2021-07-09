@@ -3,6 +3,11 @@
 // import { message } from 'antd';
 import ajax from './ajax'
 
+// jsonp请求没法ajax发送
+import jsonp from 'jsonp'
+import { reject, resolve } from 'q'
+import { message } from 'antd'
+
 
 // 登录请求,经过ajax文件配置之后，可以放心传输对象
 //ajax函数后面应该跟小括号，表示回调的作用
@@ -48,3 +53,28 @@ import ajax from './ajax'
 
 
 export const reqRegister = (value) => ajax.post('/Register_test',{value})
+
+// 发送jsonp请求得到天气信息
+export const reqWeather =(id) =>{
+
+  return new Promise ((resolve,reject)=>{
+    // 执行器执行异步函数，成功resolve（），失败reject（）
+    // 直接提示错误信息
+    const url = `http://api.map.baidu.com/weather/v1/?district_id=${id}&data_type=all&ak=RgTiQvyMni1ww5PSKnYXM3HZa0mjN0Fr`
+    jsonp(url,{},(error,data) => {
+      if (! error && data.error === 0){
+        // 成功的
+        const result =JSON.parse(data)
+        const weather = result.now.text
+        const temp =result.now.temp
+        console.log(temp)
+        // 传两个数据的话需要用到花括号，打包
+        resolve({weather,temp})
+      }
+      else{
+        message.error('获取天气信息失败')
+      }
+  })
+  })
+  
+}

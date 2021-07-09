@@ -47,9 +47,9 @@ export default class Admin extends Component{
                 <Sider width={200} >
                     <LeftNav/>
                 </Sider>
-                <Layout>
+                <Layout style = {{height :800 }}>
                     <Header/>
-                    <Content style ={{backgroundColor :'white'}}>
+                    <Content style ={{backgroundColor :'white' , margin:'20px'}}>
                     <Switch>
                     {/* 大小写都要完全一样 注意要有总的路由图在脑海里 */}
                         <Route path ='/home' component ={Home}/>
