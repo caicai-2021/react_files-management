@@ -15,11 +15,14 @@ import { formateDate } from '../../utils/dateUtils'
 
 // 引入天气请求函数
 import { reqWeather } from '../../api'
+
+// 引入button连接
+import LinkButton from '../link-button';
 class Header extends Component {
 
     // 设计状态，显示日期时间,设计其中属性值
     state = {
-        currentTime: formateDate("yyyy/MM/dd hh:mm:ss",Date.now()),
+        currentTime: formateDate("yyyy/MM/dd w hh:mm:ss",Date.now()),
         day_weather :'',
         max_degree:'',
         min_degree:''
@@ -31,7 +34,7 @@ class Header extends Component {
         Modal.confirm({
             title: '确认退出本系统吗？',
             icon: <ExclamationCircleOutlined />,
-            content: 'Some descriptions',
+            content: '感谢您的使用',
             onOk: () => {
                 console.log('OK');
                 //  确定后清楚数据
@@ -81,7 +84,7 @@ class Header extends Component {
         this.intervalId = setInterval(() => {
             // 将currentTime更新为目前的值
             this.setState({
-                currentTime: formateDate("yyyy/MM/dd hh:mm:ss",Date.now())
+                currentTime: formateDate("yyyy/MM/dd w hh:mm:ss ",Date.now())
             })
         }, 1000);
         // 发jsonp请求，获取天气信息显示
@@ -103,7 +106,7 @@ class Header extends Component {
             <div className="header">
                 <div className="header-top">
                     欢迎您！{user.name}&nbsp;&nbsp;
-                    <a href="#!" onClick={this.logout}>退出</a>
+                    <LinkButton onClick={this.logout}>退出</LinkButton>
                 </div>
                 <div className="header-bottom">
                     <div className="header-bottom-left">{title}</div>

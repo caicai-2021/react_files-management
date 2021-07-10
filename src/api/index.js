@@ -5,7 +5,7 @@ import ajax from './ajax'
 
 // jsonp请求没法ajax发送
 import jsonp from 'jsonp'
-import { reject, resolve } from 'q'
+// import { reject, resolve } from 'q'
 import { message } from 'antd'
 
 
@@ -64,7 +64,7 @@ export const reqWeather =() =>{
       if (! error && data.status === 200){
         // 成功的
         const {day_weather,max_degree,min_degree}=data.data.forecast_24h[1]
-        console.log({day_weather,max_degree,min_degree})
+        // console.log({day_weather,max_degree,min_degree})
         // 传两个数据的话需要用到花括号，打包
         resolve({day_weather,max_degree,min_degree})
       }
