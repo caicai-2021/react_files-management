@@ -55,21 +55,18 @@ import { message } from 'antd'
 export const reqRegister = (value) => ajax.post('/Register_test',{value})
 
 // 发送jsonp请求得到天气信息
-export const reqWeather =(id) =>{
-
+export const reqWeather =() =>{
   return new Promise ((resolve,reject)=>{
     // 执行器执行异步函数，成功resolve（），失败reject（）
     // 直接提示错误信息
-    const url = `http://api.map.baidu.com/weather/v1/?district_id=${id}&data_type=all&ak=RgTiQvyMni1ww5PSKnYXM3HZa0mjN0Fr`
+    const url = `https://wis.qq.com/weather/common?source=pc&weather_type=forecast_24h&province=北京&city=北京&country=海淀`
     jsonp(url,{},(error,data) => {
-      if (! error && data.error === 0){
+      if (! error && data.status === 200){
         // 成功的
-        const result =JSON.parse(data)
-        const weather = result.now.text
-        const temp =result.now.temp
-        console.log(temp)
+        const {day_weather,max_degree,min_degree}=data.data.forecast_24h[1]
+        console.log({day_weather,max_degree,min_degree})
         // 传两个数据的话需要用到花括号，打包
-        resolve({weather,temp})
+        resolve({day_weather,max_degree,min_degree})
       }
       else{
         message.error('获取天气信息失败')

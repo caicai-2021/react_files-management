@@ -425,6 +425,7 @@ module.exports = function (webpackEnv) {
                   isEnvDevelopment &&
                   shouldUseReactRefresh &&
                   require.resolve('react-refresh/babel'),
+                  ["import", {libraryName:"antd",style: true}],
                 ].filter(Boolean),
                 // This is a feature of `babel-loader` for webpack (not Babel itself).
                 // It enables caching results in ./node_modules/.cache/babel-loader/
@@ -473,7 +474,7 @@ module.exports = function (webpackEnv) {
               test: cssRegex,
               exclude: cssModuleRegex,
               use: getStyleLoaders({
-                importLoaders: 1,
+                importLoaders: 2,
                 sourceMap: isEnvProduction
                   ? shouldUseSourceMap
                   : isEnvDevelopment,
@@ -541,7 +542,7 @@ module.exports = function (webpackEnv) {
               exclude: lessModuleRegex,
               use: getStyleLoaders(
                 {
-                  importLoaders: 2,
+                  importLoaders: 3,
                   moudles: true,              //模块化　　
                   sourceMap: isEnvProduction && shouldUseSourceMap,
                 },
@@ -553,9 +554,12 @@ module.exports = function (webpackEnv) {
               test: lessModuleRegex,
               use: getStyleLoaders(
                 {
-                  importLoaders: 2,
+                  importLoaders: 3,
                   sourceMap: isEnvProduction && shouldUseSourceMap,
                   getLocalIdent: getCSSModuleLocalIdent,
+                  modules: {
+                    getLocalIdent: getCSSModuleLocalIdent,
+                  },
                 },
                 'less-loader'
               )

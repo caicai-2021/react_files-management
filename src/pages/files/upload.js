@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import './upload.less'
+import './upload.css'
 
 export default class Upload extends Component {
     render() {

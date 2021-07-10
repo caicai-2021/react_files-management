@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import './download.less'
+import './download.css'
 
 export default class Download extends Component {
     render() {
