@@ -3,7 +3,7 @@ import { Form, Input, Button, message  } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
 import './login.css';//css里进行编译，lcss无法进行转换
-import logo from '../../assets/images/logo.jpg'
+import logo from '../../assets/images/logo.png'
 //引入接口请求函数
 import { reqLogin } from '../../api';
 import { Redirect } from 'react-router-dom';

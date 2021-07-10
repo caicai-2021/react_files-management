@@ -8,12 +8,13 @@
   background-color: #0068B7;
 }
 .left-nav .left-nav-link img {
-  width: 40 px;
+  width: 40px;
   height: 40px;
-  margin: 0 20px;
+  margin-left: 15px;
 }
 .left-nav .left-nav-link h1 {
   color: white;
   font-size: 26px;
-  margin-bottom: 0;
+  margin-bottom: 10;
+  margin-right: 10;
 }

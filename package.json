@@ -5,6 +5,7 @@
   "dependencies": {
     "@ant-design/compatible": "^1.0.8",
     "@ant-design/icons": "^4.6.2",
+    "@ant-design/pro-descriptions": "^1.8.7",
     "@ant-design/pro-table": "^2.42.1",
     "@babel/core": "7.12.3",
     "@pmmmwh/react-refresh-webpack-plugin": "0.4.3",
