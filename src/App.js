@@ -15,9 +15,10 @@ class App extends Component {
         return(
         <BrowserRouter>
             <Switch>
+            {/* 摆放位置很有讲究，admin放在最下面 跟谁先匹配就显示谁的界面 */}
                 <Route path="/login" component={Login} />
-                <Route path="/admin" component={Admin} />
                 <Route path="/register" component = {Register}/>
+                <Route path="/" component={Admin} />
             </Switch>
         </BrowserRouter>
         )
