@@ -23,8 +23,9 @@ import { message } from 'antd'
 // Add a request interceptor
 axios.interceptors.request.use(function (config) {
     // Do something before request is sent
-    const { method , data } = config
-    if (method.toLowerCase() === 'post' && typeof data === 'object')
+    // 可加入筛选条件
+    // const { method , data } = config
+    // if (method.toLowerCase() === 'get' )
     return config;
   }, function (error) {
     // Do something with request error

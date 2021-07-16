@@ -1,220 +1,236 @@
 import React, { Component } from 'react'
 import { useContext, useState, useEffect, useRef } from 'react';
-import { Table, Input, Button, Popconfirm, Form, Card } from 'antd';
+import { Table, Input, Button, Popconfirm, Form, Card, message, Space } from 'antd';
+import Highlighter from 'react-highlight-words';
+import { SearchOutlined } from '@ant-design/icons';
+import zh_CN from 'antd/lib/locale-provider/zh_CN'
 import './info.css'
 
+// 引入数据源请求
+import { reqList } from '../../api';
+// 引入储存组件备用
 
-const EditableContext = React.createContext(null);
 
-const EditableRow = ({ index, ...props }) => {
-    const [form] = Form.useForm();
-    return (
-        <Form form={form} component={false}>
-            <EditableContext.Provider value={form}>
-                <tr {...props} />
-            </EditableContext.Provider>
-        </Form>
-    );
-};
-
-const EditableCell = ({
-    title,
-    editable,
-    children,
-    dataIndex,
-    record,
-    handleSave,
-    ...restProps
-}) => {
-    const [editing, setEditing] = useState(false);
-    const inputRef = useRef(null);
-    const form = useContext(EditableContext);
-    useEffect(() => {
-        if (editing) {
-            inputRef.current.focus();
-        }
-    }, [editing]);
-
-    const toggleEdit = () => {
-        setEditing(!editing);
-        form.setFieldsValue({
-            [dataIndex]: record[dataIndex],
-        });
-    };
-    const save = async () => {
-        try {
-            const values = await form.validateFields();
-            toggleEdit();
-            handleSave({ ...record, ...values });
-        } catch (errInfo) {
-            console.log('Save failed:', errInfo);
-        }
-    };
-
-    let childNode = children;
-
-    if (editable) {
-        childNode = editing ? (
-            <Form.Item
-                style={{
-                    margin: 0,
-                }}
-                name={dataIndex}
-                rules={[
-                    {
-                        required: true,
-                        message: `${title} is required.`,
-                    },
-                ]}
-            >
-                <Input ref={inputRef} onPressEnter={save} onBlur={save} />
-            </Form.Item>
-        ) : (
-            <div
-                className="editable-cell-value-wrap"
-                style={{
-                    paddingRight: 24,
-                }}
-                onClick={toggleEdit}
-            >
-                {children}
-            </div>
-        );
-    }
-
-    return <td {...restProps}>{childNode}</td>;
-};
 
 export default class Info extends Component {
     constructor(props) {
         super(props);
-        // 定义列的信息，传到下面column中
+        this.state = {
+            selectedRowKeys: [],
+            // 发请求,得到初始值，设为空数组
+            dataSource: [],
+            //  是否正在请求加载中
+            loading: false,
+            searchText: '',
+            searchedColumn: '',
+            selectedRows:[],
+        };
+    }
+    // 复选框的设置
+    onSelectChange = (selectedRowKeys, selectedRows) => {
+        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+        this.setState({ selectedRowKeys });
+    };
+
+    // 筛选框的渲染
+    getColumnSearchProps = dataIndex => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+            <div style={{ padding: 8 }}>
+                <Input
+                    ref={node => {
+                        this.searchInput = node;
+                    }}
+                    placeholder={`Search ${dataIndex}`}
+                    value={selectedKeys[0]}
+                    onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
+                    style={{ marginBottom: 8, display: 'block' }}
+                />
+                <Space>
+                    <Button
+                        type="primary"
+                        onClick={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
+                        icon={<SearchOutlined />}
+                        size="small"
+                        style={{ width: 90 }}
+                    >
+                        查找
+                    </Button>
+                    <Button onClick={() => this.handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+                        重置
+                    </Button>
+                </Space>
+            </div>
+        ),
+        filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+        onFilter: (value, record) =>
+            record[dataIndex]
+                ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+                : '',
+        onFilterDropdownVisibleChange: visible => {
+            if (visible) {
+                setTimeout(() => this.searchInput.select(), 100);
+            }
+        },
+        // 高亮显示文本
+        render: text =>
+            this.state.searchedColumn === dataIndex ? (
+                <Highlighter
+                    highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                    searchWords={[this.state.searchText]}
+                    autoEscape
+                    textToHighlight={text ? text.toString() : ''}
+                />
+            ) : (
+                text
+            ),
+    });
+
+    handleSearch = (selectedKeys, confirm, dataIndex) => {
+        confirm();
+        this.setState({
+            searchText: selectedKeys[0],
+            searchedColumn: dataIndex,
+        });
+    };
+
+    handleReset = clearFilters => {
+        clearFilters();
+        this.setState({ searchText: '' });
+    };
+
+    // 初始化table的所有列信息
+    initColumns = () => {
         this.columns = [
             {
-                title: 'name',
-                dataIndex: 'name',
-                width: '15%',
+                title: '学号',
+                dataIndex: 'User_number',
+                // width: '15%',
                 editable: true,
                 // 可以再次渲染
                 // render:text =><a href ="javascript:;">{text}</a>
                 fixed: 'left',
+                filters: [
+                    {
+                        text: 's',
+                        value: 's',
+                    },
+                    {
+                        text: 'g',
+                        value: 'g',
+                    }],
+                defaultSortOrder: 'descend',
+                onFilter: (value, record) => record.User_number.indexOf(value) === 0,
+                sorter: (a, b) => a.User_number.length - b.User_number.length,
+                // ...this.getColumnSearchProps('User_number'),
             },
             {
-                title: 'age',
-                dataIndex: 'age',
+                title: '类型',
+                dataIndex: 'User_type',
+                defaultSortOrder: 'descend',
+                sorter: (a, b) => a.User_type - b.User_type,
             },
             {
-                title: 'address',
-                dataIndex: 'address',
+                title: '姓名',
+                dataIndex: 'Name',
             },
             {
-                title: 'operation',
-                dataIndex: 'operation',
-                width: '10%',
-                render: (_, record) =>
-                    this.state.dataSource.length >= 1 ? (
-                        <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
-                            <a>Delete</a>
-                        </Popconfirm>
-                    ) : null,
-                fixed: 'right',
+                title: '居住地',
+                dataIndex: 'Residence',
+                ...this.getColumnSearchProps('Residence'),
+            },
+            {
+                title: '宿舍',
+                dataIndex: 'Dorm',
+            },
+            {
+                title: '办公地',
+                dataIndex: 'Office',
+            },
+            {
+                title: '邮箱',
+                dataIndex: 'Mail',
+            },
+            {
+                title: '电话',
+                dataIndex: 'Phone',
+            },
+            {
+                title: '申请时间',
+                dataIndex: 'Createtime',
             },
         ];
-        this.state = {
-            dataSource: [
-                {
-                    key: '0',
-                    name: 'Edward King 0',
-                    age: '32',
-                    address: 'London, Park Lane no. 0',
-                },
-                {
-                    key: '1',
-                    name: 'Edward King 1',
-                    age: '32',
-                    address: 'London, Park Lane no. 1',
-                },
-            ],
-            count: 2,
-        };
     }
 
-    handleDelete = (key) => {
-        const dataSource = [...this.state.dataSource];
+    // 数据源请求函数
+    getdata = async () => {
+        // 发请求前，改变loading状态
+        this.setState({ loading: true });
+        const dataSource = await reqList();
+        this.setState({ loading: false });
+        console.log(dataSource);
         this.setState({
-            dataSource: dataSource.filter((item) => item.key !== key),
-        });
-    };
-    handleAdd = () => {
-        const { count, dataSource } = this.state;
-        const newData = {
-            key: count,
-            name: `Edward King ${count}`,
-            age: '32',
-            address: `London, Park Lane no. ${count}`,
-        };
-        this.setState({
-            dataSource: [...dataSource, newData],
-            count: count + 1,
-        });
-    };
-    handleSave = (row) => {
-        const newData = [...this.state.dataSource];
-        const index = newData.findIndex((item) => row.key === item.key);
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
-        this.setState({
-            dataSource: newData,
-        });
-    };
+            dataSource
+        })
+    }
+
+
+    componentWillMount() {
+        this.initColumns()
+    }
+
+    componentDidMount() {
+        this.getdata()
+    }
+
 
     render() {
-        const { dataSource } = this.state;
-        const components = {
-            body: {
-                row: EditableRow,
-                cell: EditableCell,
-            },
-        };
-        // 描述列字段
-        const columns = this.columns.map((col) => {
-            if (!col.editable) {
-                return col;
-            }
-
-            return {
-                ...col,
-                onCell: (record) => ({
-                    record,
-                    editable: col.editable,
-                    dataIndex: col.dataIndex,
-                    title: col.title,
-                    handleSave: this.handleSave,
-                }),
+        // 取出状态数据 
+        const { dataSource, loading, selectedRowKeys } = this.state;
+        const rowSelection = {
+            selectedRowKeys,
+            onChange: this.onSelectChange,
+            selections: [
+                Table.SELECTION_ALL,
+                Table.SELECTION_INVERT,
+                Table.SELECTION_NONE,
+              ],
             };
-        });
+        
+        console.log(selectedRowKeys)
+        const hasSelected = selectedRowKeys.length > 0;
+
         return (
             <div className="info">
-                <Card title="导出和保存" extra={
+                <Card title="梯队成员" extra={[
                     <Button
-                        onClick={this.handleAdd}
-                        type="primary"
-                        style={{
-                            marginBottom: 3,
-                        }}
-                    >
-                        Add a row
-                    </Button>} >
+                        className="button-1"
+                        onClick={this.handleAdd} type="primary">
+                        删除
+                    </Button>,
+                    <Button
+                        className="button-2">
+                        保存
+                    </Button>,
+                    <Button className="button-2" type="primary" disabled={!hasSelected} loading={loading}>
+                        导出
+                    </Button>,
+                    <span style={{ marginLeft: 8 }}>
+                        {hasSelected ? `已选 ${selectedRowKeys.length} 条` : ''}
+                    </span>,
+                ]}>
                     <div>
                         <Table
-                            components={components}
-                            rowClassName={() => 'editable-row'}
                             // 边框
                             bordered
                             dataSource={dataSource}
-                            columns={columns}
+                            columns={this.columns}
+                            // 复选框设置
+                            rowSelection={rowSelection}
+                            // 数据等待界面
+                            loading={loading}
                             // 分页的配置
-                            pagination ={{ showQuickJumper:true} }
+                            pagination={{ showQuickJumper: true }}
                             // 滚动条
                             scroll={{ x: 1500, y: 380 }}
                         />

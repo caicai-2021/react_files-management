@@ -1,3 +1,13 @@
 .intro {
   height: 100%;
 }
+.intro .button-1 {
+  margin: 10px;
+  border-width: 2mm;
+}
+.intro .button-2 {
+  margin: 10px;
+}
+.intro .button-3 {
+  margin: 10px;
+}

@@ -14,31 +14,7 @@ import { message } from 'antd'
 //将登录程序封装在index文件中
 
 //加入箭头函数，使得数值可以进一步传递
-// export const reqLogin = (value) => (
-//   ajax({
-//     method: 'post',
-//     url: '/login_test',
-//     data: {
-//       value
-//     }
-//   })
-//   )
   export const reqLogin = (value) => ajax.post('/login_test',{value})
-
-  // .then(function (response) {
-  //   console.log(response.data);
-  //   console.log(response.status);
-  //   if (response.data.state === 0 ) 
-  //       {
-  //         message.success('登录成功！')
-  //         return 1
-  //       }
-  //       else
-  //       {
-  //         message.error(response.data.msg)
-  //         return 0
-  //       }
-  // });
 
 // export const reqLogin = (user_number , password) => (ajax({
 //     method: 'post',
@@ -51,7 +27,7 @@ import { message } from 'antd'
 //   }));
 // => ajax.post('url',{user_name,password})
 
-
+// 登记请求接口
 export const reqRegister = (value) => ajax.post('/Register_test',{value})
 
 // 发送jsonp请求得到天气信息
@@ -73,5 +49,7 @@ export const reqWeather =() =>{
       }
   })
   })
-  
 }
+
+// 发送获取信息表格总数据的请求
+export const reqList = () => ajax.post('/getList')

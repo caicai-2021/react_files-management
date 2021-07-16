@@ -14,3 +14,12 @@
 [data-theme='dark'] .editable-row:hover .editable-cell-value-wrap {
   border: 1px solid #434343;
 }
+.info .button-1 {
+  margin: 10px;
+}
+.info .button-2 {
+  margin: 10px;
+}
+.info .button-3 {
+  margin: 10px;
+}

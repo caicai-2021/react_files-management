@@ -67,7 +67,7 @@ class LeftNav extends Component {
                 select:总是根据最新指定的key进行显示 */}
                     <Menu
                         theme={this.state.theme}
-                        style={{ width: 200 , height:724}}
+                        style={{ width: 200 }}
                         defaultOpenKeys={[this.openKey]}
                         selectedKeys={[selectKey]}
                         mode="inline"
