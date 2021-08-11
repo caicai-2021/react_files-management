@@ -20,6 +20,7 @@ import Info from '../info/info';
 import Intro from '../intro/intro';
 import Download from '../files/download';
 import Upload from '../files/upload';
+import { FullscreenOutlined } from '@ant-design/icons';
 
 
 const {  Footer, Sider, Content } = Layout;
@@ -44,15 +45,15 @@ export default class Admin extends Component{
 
         return (
             <Layout style = {{height :'100%' }}>
-                <Sider width={200} >
+                <Sider width={200} style = {{height :'100%' }}>
                     <LeftNav/>
                 </Sider>
-                <Layout style = {{height :800 }}>
+                <Layout >
                     <Header/>
                     <Content style ={{backgroundColor :'white' , margin:'20px'}}>
                     <Switch>
                     {/* 大小写都要完全一样 注意要有总的路由图在脑海里 */}
-                        <Route path ='/home' component ={Home}/>
+                        <Route path ='/home' component = {Home}/>
                         <Route path ='/info' component ={Info}/>
                         <Route path ='/intro' component ={Intro}/>
                         <Route path ='/files/upload' component ={Upload}/>

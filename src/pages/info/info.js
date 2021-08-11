@@ -1,14 +1,15 @@
 import React, { Component } from 'react'
-import { useContext, useState, useEffect, useRef } from 'react';
-import { Table, Input, Button, Popconfirm, Form, Card, message, Space } from 'antd';
+// import { useContext, useState, useEffect, useRef } from 'react';
+import { Table, Input, Button, Card, message, Space } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
-import zh_CN from 'antd/lib/locale-provider/zh_CN'
 import './info.css'
 
 // 引入数据源请求
 import { reqList } from '../../api';
 // 引入储存组件备用
+
+import { reqDel } from '../../api';
 
 
 
@@ -31,6 +32,15 @@ export default class Info extends Component {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
         this.setState({ selectedRowKeys });
     };
+
+    onDelect = async() =>{
+        const { selectedRowKeys } = this.state;
+        console.log(selectedRowKeys)
+        const result = await reqDel(selectedRowKeys)
+        if (result.status === 0){
+            message.success('删除成功')
+        }
+    }
 
     // 筛选框的渲染
     getColumnSearchProps = dataIndex => ({
@@ -205,7 +215,7 @@ export default class Info extends Component {
                 <Card title="梯队成员" extra={[
                     <Button
                         className="button-1"
-                        onClick={this.handleAdd} type="primary">
+                        onClick={this.onDelect} type="primary">
                         删除
                     </Button>,
                     <Button

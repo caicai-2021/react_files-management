@@ -53,3 +53,8 @@ export const reqWeather =() =>{
 
 // 发送获取信息表格总数据的请求
 export const reqList = () => ajax.post('/getList')
+
+export const reqDel = (value) => ajax.post('/ListDelect',{value})
+
+// 修改信息
+export const reqEditForm =(value) => ajax.post('/InfoEdit',{value})
