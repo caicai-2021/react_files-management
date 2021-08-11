@@ -63,6 +63,7 @@
     "postcss-preset-env": "6.7.0",
     "postcss-safe-parser": "5.0.2",
     "prompts": "2.4.0",
+    "rc-tween-one": "^2.7.3",
     "react": "^17.0.2",
     "react-app-polyfill": "^2.0.0",
     "react-app-rewired": "^2.1.8",

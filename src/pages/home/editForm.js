@@ -70,8 +70,8 @@ export default class EditForm extends Component {
         previewTitle: '',
         fileList: [],
     };
-    // 目的是创造一个user，能够更新图片状态
-     user = memoryUtils.user
+    // 目的是创造一个user，能够更新图片状态，只能从render中读取，不支持在外面生成
+    //  user = memoryUtils.user
     //  this.setState{(fileList:[user.photo_data])}
 
     //   handleChange = ({ fileList }) => this.setState({ fileList });
@@ -121,23 +121,32 @@ export default class EditForm extends Component {
         // 将子组件的参数对象交给了父组件
         this.props.setForm(this.formRef.current.getFieldsValue())
     }
+    // 首先第一步执行
+    //  componentWillMount() {
+    //     // 将子组件的参数交给了父组件
+    //     const user = memoryUtils.user
+    //     this.setState{(
+    //         fileList:[user.photo_data]
+    //     )}
+    // }
     render() {
         const { fileList} = this.state;
+        console.log(fileList)
         const uploadButton = (
             <div>
                 <PlusOutlined />
                 <div style={{ marginTop: 8 }}>Upload</div>
             </div>
         );
-
+        //感觉这个必须放在里面，放在外面无法读取
         const user = memoryUtils.user
-
 
         return (
 
             <Form  {...formItemLayout}
                 // name="register"
                 onFinish={this.onFinish}
+                // 传递数据的重要一步
                 ref={this.formRef}
                 scrollToFirstError>
                 <Form.Item
@@ -338,12 +347,10 @@ export default class EditForm extends Component {
                         listType="picture-card"
                         fileList={fileList}
                         customRequest={() => false}
-                       
                         beforeUpload={beforeUpload}
                         onPreview ={onPreview}
-                        
-                        onChange={this.handleChange}>
-                      
+                        onChange={this.handleChange}
+                        >
                         {this.state.fileList.length >= 1 ? null : uploadButton}
                     </Upload>
                     

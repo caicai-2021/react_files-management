@@ -90,7 +90,7 @@ export default class Home extends Component {
                         传递一个接收值的函数，子组件传一个value，父组件得到一个value，将子组件传递来的对象，存到父组件上*/}
                         <EditForm setForm={form => this.form = form} />
                     </Modal>
-                    <Descriptions bordered >
+                    <Descriptions  >
                         <Descriptions.Item label="姓名">{user.name}</Descriptions.Item>
                         <Descriptions.Item label="学号">{user.user_number}</Descriptions.Item>
                         <Descriptions.Item label="头像">

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import "./index.css";
-import { Modal } from 'antd';
+import { Modal , Avatar, Image } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import memoryUtils from '../../utils/memoryUtils';
 import storageUtils from '../../utils/storageUtils';
@@ -106,6 +106,7 @@ class Header extends Component {
             <div className="header">
                 <div className="header-top">
                     欢迎您！{user.name}&nbsp;&nbsp;
+                    <Avatar shape="square" src ={<Image src={user.photo_data}/>} className ="avatar"/>
                     <LinkButton onClick={this.logout}>退出</LinkButton>
                 </div>
                 <div className="header-bottom">
