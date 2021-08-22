@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import "./index.css";
-import { Modal , Avatar, Image } from 'antd';
+import { Modal, Avatar, Image } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import memoryUtils from '../../utils/memoryUtils';
 import storageUtils from '../../utils/storageUtils';
@@ -22,10 +22,10 @@ class Header extends Component {
 
     // 设计状态，显示日期时间,设计其中属性值
     state = {
-        currentTime: formateDate("yyyy/MM/dd w hh:mm:ss",Date.now()),
-        day_weather :'',
-        max_degree:'',
-        min_degree:''
+        currentTime: formateDate("yyyy/MM/dd w hh:mm:ss", Date.now()),
+        day_weather: '',
+        max_degree: '',
+        min_degree: ''
     }
 
     // 退出，显示确认退出
@@ -62,14 +62,30 @@ class Header extends Component {
                 if (cItem) {
                     title = cItem.title
                 }
+                // 增加一层遍历来针对子子集，寻找标题
+                else{
+                    item.children.forEach(item=>{
+                        if(item.key === path){
+                            title = item.title
+                        }
+                        else if (item.children) {
+                            const cItem = item.children.find(cItem => cItem.key === path)
+                            if (cItem) {
+                                title = cItem.title
+                              
+                            }
+                        }
+                    })
+                }
+                
             }
         })
         return title
     }
 
-    getWeather =  async() => {
+    getWeather = async () => {
         // 发请求
-        const { day_weather,max_degree,min_degree} =  await reqWeather()
+        const { day_weather, max_degree, min_degree } = await reqWeather()
         // 更新状态
         this.setState({
             day_weather,
@@ -84,7 +100,7 @@ class Header extends Component {
         this.intervalId = setInterval(() => {
             // 将currentTime更新为目前的值
             this.setState({
-                currentTime: formateDate("yyyy/MM/dd w hh:mm:ss ",Date.now())
+                currentTime: formateDate("yyyy/MM/dd w hh:mm:ss ", Date.now())
             })
         }, 1000);
         // 发jsonp请求，获取天气信息显示
@@ -101,12 +117,12 @@ class Header extends Component {
         // 得到目前的标题
         const title = this.getTitle()
         // 得到目前的时间
-        const { currentTime, day_weather,max_degree,min_degree} = this.state
+        const { currentTime, day_weather, max_degree, min_degree } = this.state
         return (
             <div className="header">
                 <div className="header-top">
                     欢迎您！{user.name}&nbsp;&nbsp;
-                    <Avatar shape="square" src ={<Image src={user.photo_data}/>} className ="avatar"/>
+                    <Avatar shape="square" src={<Image src={user.photo_data} />} className="avatar" />
                     <LinkButton onClick={this.logout}>退出</LinkButton>
                 </div>
                 <div className="header-bottom">
