@@ -122,37 +122,14 @@ export default class EditForm extends Component {
         //     });
         //     console.log(info,info.file)
         if (info.file.status === 'uploading') {
-            // message.loading(`${info.file.name} 文件上传中，请等待`);
             this.upload(info.file.originFileObj, res => {
-                // 输出url
-                // message.success(`${info.file.name}文件上传成功`);
-                // const params = {
-                //   url: res,
-                //   key: that.state.uploadKey
-                // }    
                 debugger
                 console.log(res);
                 info.file.status = 'done'
                 message.success(`${info.file.name}文件上传成功`);
-              
-                // dispatch(RESOURCES_UPLOAD(params))
             });
             console.log(info,info.file)
         }
-        // if (info.file.status === 'done') {
-        //     this.upload(info, res => {
-        //         // 输出url
-        //         message.success(`${info.file.name}文件上传成功`);
-        //         // const params = {
-        //         //   url: res,
-        //         //   key: that.state.uploadKey
-        //         // }    
-        //         console.log(res);
-        //         // dispatch(RESOURCES_UPLOAD(params))
-        //     });
-        // } else if (info.file.status === 'error') {
-        //     message.error(`${info.file.name}文件上传失败`);
-        // }
     };
 
     // componentWillMount() {

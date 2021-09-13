@@ -1,4 +1,4 @@
-const menuList = [{
+const menuList_1 = [{
     title: '个人主页',
     key: '/home',
     icon: 'HomeOutlined',
@@ -13,11 +13,6 @@ const menuList = [{
             key: '/files/manage',
             icon: 'FileAddOutlined',
             children: [
-                // {
-                //     title: 'demo',
-                //     key: '/files/manage/upload',
-                //     icon: 'FileAddOutlined',
-                // },
                 {
                     title: '文章',
                     key: '/files/manage/paper',
@@ -40,11 +35,6 @@ const menuList = [{
             key: '/files/download',
             icon: 'FileSearchOutlined',
             children: [
-                // {
-                //     title: 'demo查看',
-                //     key: '/files/download/demo',
-                //     icon: 'FileAddOutlined',
-                // },
                 {
                     title: '文章查看',
                     key: '/files/download/paper',
@@ -65,13 +55,8 @@ const menuList = [{
     ]
 },
 {
-    title: '信息管理',
-    key: '/info',
-    icon: 'TeamOutlined',
-},
-{
     title: '梯队概况',
     key: '/intro',
     icon: 'AreaChartOutlined',
 }]
-export default menuList
+export default menuList_1

@@ -24,6 +24,10 @@ import Paper from '../files/paper';
 import Thesis from '../files/thesis';
 import PPT from '../files/ppt';
 
+import PptRe from '../download/pptRe';
+import ThesisRe from '../download/thesisRe';
+import PaperRe from '../download/paperRe';
+
 
 const { Footer, Sider, Content } = Layout;
 
@@ -61,7 +65,10 @@ export default class Admin extends Component {
                             <Route path='/files/manage/paper' component={Paper} />
                             <Route path='/files/manage/thesis' component={Thesis} />
                             <Route path='/files/manage/ppt' component={PPT} />
-                            <Route path='/files/download' component={Download} />
+                            <Route path='/files/download/demo' component={Download} />
+                            <Route path='/files/download/paper' component={PaperRe} />
+                            <Route path='/files/download/thesis' component={ThesisRe} />
+                            <Route path='/files/download/ppt' component={PptRe} />
                             <Redirect to='/home' />
                         </Switch>
                     </Content>

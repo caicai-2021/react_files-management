@@ -1,20 +1,11 @@
 import React, { Component } from 'react'
-// import { useContext, useState, useEffect, useRef } from 'react';
-import { Table, Input, Button, Card, message, Space } from 'antd';
+import { Table, Input, Button, Card, Space } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
-import './info.css'
+import { reqThesisList } from '../../api';
 import { exportExcel } from 'xlsx-oc';
 
-// 引入数据源请求
-import { reqList } from '../../api';
-// 引入储存组件备用
-
-import { reqDel } from '../../api';
-
-
-
-export default class Info extends Component {
+export default class ThesisRe extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -34,16 +25,22 @@ export default class Info extends Component {
         this.setState({ selectedRowKeys,selectedRows });
     };
 
-    onDelect = async () => {
-        const { selectedRowKeys } = this.state;
-        console.log(selectedRowKeys)
-        const result = await reqDel(selectedRowKeys)
-        if (result.status === 0) {
-            message.success('删除成功')
-        }
-    }
+    // 搜索的函数
+    handleSearch = (selectedKeys, confirm, dataIndex) => {
+        confirm();
+        this.setState({
+            searchText: selectedKeys[0],
+            searchedColumn: dataIndex,
+        });
+    };
+    // 重置函数
+    handleReset = clearFilters => {
+        clearFilters();
+        this.setState({ searchText: '' });
+    };
 
-    // 筛选框的渲染
+
+    // 查找函数
     getColumnSearchProps = dataIndex => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
             <div style={{ padding: 8 }}>
@@ -96,93 +93,62 @@ export default class Info extends Component {
                 text
             ),
     });
-
-    handleSearch = (selectedKeys, confirm, dataIndex) => {
-        confirm();
-        this.setState({
-            searchText: selectedKeys[0],
-            searchedColumn: dataIndex,
-        });
-    };
-
-    handleReset = clearFilters => {
-        clearFilters();
-        this.setState({ searchText: '' });
-    };
-
     // 初始化table的所有列信息
     initColumns = () => {
         this.columns = [
             {
-                title: '学号',
-                dataIndex: 'User_number',
-                // width: '15%',
+                title: '序号',
+                dataIndex: 'key',
+                width: '8%',
+                align: 'center',
                 editable: true,
                 // 可以再次渲染
                 // render:text =><a href ="javascript:;">{text}</a>
                 fixed: 'left',
-                align: 'center',
-                filters: [
-                    {
-                        text: '专硕',
-                        value: 'g'
-                    },
-                    {
-                        text: '学硕',
-                        value: 's',
-                    },
-                    {
-                        text: '博士',
-                        value: 'd',
-                    }],
-                // defaultSortOrder: 'descend',
-                onFilter: (value, record) => record.User_number.indexOf(value) === 0,
-                sorter: (a, b) => a.User_number.length - b.User_number.length,
-                // ...this.getColumnSearchProps('User_number'),
-            },
-            // {
-            //     title: '类型',
-            //     dataIndex: 'User_type',
-            //     // defaultSortOrder: 'descend',
-            //     // sorter: (a, b) => a.User_type - b.User_type,
-            // },
-            {
-                title: '姓名',
-                dataIndex: 'Name',
-                fixed: 'left',
-                ...this.getColumnSearchProps('Name'),
-                align: 'center',
+                // 筛选的内容
+                defaultSortOrder: 'descend',
+                // 升序降序排列
+                sorter: (a, b) => a.key - b.key
+                // onFilter: (value, record) => record.User_number.indexOf(value) === 0,
+                // sorter: (a, b) => a.User_number.length - b.User_number.length,
+                // // ...this.getColumnSearchProps('User_number'),
             },
             {
-                title: '居住地',
-                dataIndex: 'Residence',
-                ...this.getColumnSearchProps('Residence'),
+                title: '作者',
+                dataIndex: 'author',
+                defaultSortOrder: 'descend',
                 align: 'center',
+                ...this.getColumnSearchProps('author'),
             },
             {
-                title: '宿舍',
-                dataIndex: 'Dorm',
-                ...this.getColumnSearchProps('Dorm'),
+                title: '论文名称',
+                dataIndex: 'name',
                 align: 'center',
+                ...this.getColumnSearchProps('name'),
             },
             {
-                title: '办公地',
-                dataIndex: 'Office',
+                title: '导师',
+                dataIndex: 'tutor',
                 align: 'center',
+                ...this.getColumnSearchProps('tutor'),
             },
             {
-                title: '邮箱',
-                dataIndex: 'Mail',
+                title: '文件提交名称',
+                dataIndex: 'file_name',
                 align: 'center',
+                ...this.getColumnSearchProps('file_name'),
             },
             {
-                title: '电话',
-                dataIndex: 'Phone',
+                title: '毕业时间',
+                dataIndex: 'gradu_time',
                 align: 'center',
+                defaultSortOrder: 'descend',
+                // 升序降序排列,由于保存的不是int类型，不能排序
+                // sorter: (a, b) => a.gradu_time - b.gradu_time
             },
             {
-                title: '申请时间',
-                dataIndex: 'Createtime',
+                title: '文件类型',
+                dataIndex: 'type',
                 align: 'center',
             },
         ];
@@ -195,71 +161,54 @@ export default class Info extends Component {
             const item = selectedRows[i];
             data.push({
                 key: i,
-                User_number: item.User_number,
-                Name: item.Name,
-                Gender: item.Gender,
-                Dorm:item.Dorm,
-                Residence:item.Residence,
-                Office:item.Office,
-                Mail: item.Mail,
-                Phone: item.Phone,
-                Create_time: item.Createtime,
+                author: item.author,
+                name: item.name,
+                tutor: item.tutor,
+                file_name: item.file_name,
+                gradu_time:item.gradu_time,
+                type: item.type,
             });
         }
         const header = [
             {
-                k: 'User_number',
-                v: '学号'
+                k: 'author',
+                v: '作者'
             },
             {
-                k: 'Name',
-                v: '姓名'
+                k:'name',
+                v:'论文名称'
             },
             {
-                k: 'Gender',
-                v: '性别'
+                k:'tutor',
+                v:'导师'
             },
             {
-                k: 'Dorm',
-                v: '宿舍'
+                k:'file_name',
+                v:'文件提交名称'
             },
             {
-                k: 'Residence',
-                v: '居住地'
+                k:'gradu_time',
+                v:'毕业时间'
             },
             {
-                k: 'Office',
-                v: '办公位置'
-            },
-            {
-                k: 'Mail',
-                v: '邮箱'
-            },
-            {
-                k: 'Phone',
-                v: '电话'
-            },
-            {
-                k: 'Create_time',
-                v: '创建时间'
+                k:'type',
+                v:'文件类型'
             },
         ];
-        const name = '梯队成员统计表.xlsx';
-        exportExcel(header, data, name);
+        const name ='论文提交统计表.xlsx';
+        exportExcel(header,data,name);
     }
-
     // 数据源请求函数
     getdata = async () => {
         // 发请求前，改变loading状态
         this.setState({ loading: true });
-        const dataSource = await reqList();
+        const dataSource = await reqThesisList();
         this.setState({ loading: false });
         console.log(dataSource);
         this.setState({
             dataSource
         })
     }
-
 
     componentWillMount() {
         this.initColumns()
@@ -268,7 +217,6 @@ export default class Info extends Component {
     componentDidMount() {
         this.getdata()
     }
-
 
     render() {
         // 取出状态数据 
@@ -288,16 +236,7 @@ export default class Info extends Component {
 
         return (
             <div className="info">
-                <Card title="梯队成员" extra={[
-                    <Button
-                        className="button-1"
-                        onClick={this.onDelect} type="primary">
-                        删除
-                    </Button>,
-                    <Button
-                        className="button-2">
-                        保存
-                    </Button>,
+                <Card title="索引" extra={[
                     <Button className="button-2" type="primary" disabled={!hasSelected} loading={loading} onClick={this.outexcel}>
                         导出
                     </Button>,

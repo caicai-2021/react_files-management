@@ -1,6 +1,17 @@
 import React, { Component } from 'react'
-import { Form, Upload, Divider, Input, Card, Select, Button, Radio, DatePicker } from 'antd'
-import { InboxOutlined ,  PlusOutlined} from '@ant-design/icons';
+import { Form, Upload, Divider, Input, Card, Select, Button, DatePicker, message } from 'antd'
+import { InboxOutlined, PlusOutlined } from '@ant-design/icons';
+import { reqUploadPpt } from '../../api';
+
+var Minio = require('minio')
+
+var client = new Minio.Client({
+    endPoint: '127.0.0.1',
+    port: 9000,
+    useSSL: false,
+    accessKey: 'admin',
+    secretKey: '123456789'
+});
 
 const { Option } = Select;
 let index = 0;
@@ -13,9 +24,7 @@ const formItemLayout = {
         span: 14,
     },
 };
-const onFinish = (values) => {
-    console.log('Received values of form: ', values);
-};
+
 
 const normFile = (e) => {
     console.log('Upload event:', e);
@@ -23,38 +32,84 @@ const normFile = (e) => {
     if (Array.isArray(e)) {
         return e;
     }
+    return e && e.fileList;
 }
 
 export default class PPT extends Component {
     state = {
-        items: ['组会汇报', '答辩展示','项目总结'],
+        items: ['组会汇报', '答辩展示', '项目总结'],
         name: '',
-      };
-    
-      onNameChange = event => {
+    };
+
+    // 上传文件
+    upload(file, callback) {
+        let fr = new FileReader();//用FileReader 读取文件流
+        fr.readAsArrayBuffer(file);
+        fr.addEventListener("loadend", e => {
+            // debugger
+            //e.target.result 就是读取到的文件流 将其转为Buffer类型即可 
+            client.putObject('photos', file.name, new Buffer(e.target.result), file.size, callback(file.name)
+            )
+        })
+    }
+    // 通过控制change函数来上传文件
+    onChange = info => {
+        // debugger
+        if (info.file.status === 'uploading') {
+            this.upload(info.file.originFileObj, res => {
+                // debugger
+                console.log(res);
+                info.file.status = 'done'
+                message.success(`${info.file.name}文件上传成功`);
+            });
+            console.log(info, info.file)
+        }
+    };
+
+    onFinish = (values) => {
+        console.log('Received values of form: ', values);
+        this.upppt(values)
+    };
+
+    async  upppt(data) {
+        const result = await reqUploadPpt (data);
+        console.log(result);
+       
+        if (result.state === 0) {
+      
+            message.success(result.msg)
+        }
+        else
+        {
+            message.error(result.msg)
+        }
+    }
+
+
+    onNameChange = event => {
         this.setState({
-          name: event.target.value,
+            name: event.target.value,
         });
-      };
-    
-      addItem = () => {
+    };
+
+    addItem = () => {
         console.log('addItem');
         const { items, name } = this.state;
         this.setState({
-          items: [...items, name || `New item ${index++}`],
-          name: '',
+            items: [...items, name || `New item ${index++}`],
+            name: '',
         });
-      };
+    };
 
     render() {
         const { items, name } = this.state;
-        
+
         return (
             <Card title="上传表单" bordered >
                 <Form
                     name="validate_other"
                     {...formItemLayout}
-                    onFinish={onFinish}
+                    onFinish={this.onFinish}
                     initialValues={{
                         'input-number': 3,
                         'checkbox-group': ['A', 'B'],
@@ -80,7 +135,7 @@ export default class PPT extends Component {
                                             style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }}
                                             onClick={this.addItem}
                                         >
-                                            <PlusOutlined /> Add item
+                                            <PlusOutlined /> 新增条目
                                         </a>
                                     </div>
                                 </div>
@@ -104,13 +159,6 @@ export default class PPT extends Component {
                         <Input />
                     </Form.Item>
 
-                    <Form.Item name="radio-group" label="文件格式" rules={[{ required: true }]} >
-                        <Radio.Group>
-                            <Radio value="a">ppt演示文稿</Radio>
-                            <Radio value="b">zip压缩包</Radio>
-                        </Radio.Group>
-                    </Form.Item>
-
                     <Form.Item name="time" label="展示时间" rules={[{ required: true }]} >
                         <DatePicker />
                     </Form.Item>
@@ -123,7 +171,13 @@ export default class PPT extends Component {
 
                     <Form.Item label="上传框" rules={[{ required: true }]} >
                         <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
-                            <Upload.Dragger name="files" action="/upload.do" >
+                            <Upload.Dragger name="files"
+                                customRequest={() => false}
+                                onChange={this.onChange}
+                                beforeUpload={this.beforeUpload}
+                                onRemove={false}
+                                maxCount={1}
+                            >
                                 <p className="ant-upload-drag-icon">
                                     <InboxOutlined />
                                 </p>

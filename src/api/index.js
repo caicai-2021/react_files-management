@@ -58,3 +58,17 @@ export const reqDel = (value) => ajax.post('/ListDelect',{value})
 
 // 修改信息
 export const reqEditForm =(value) => ajax.post('/InfoEdit',{value})
+
+// 上传thesis
+export const reqUploadThesis =(value) => ajax.post('/thesis_upload',{value})
+// 显示thesis列表
+export const reqThesisList = () => ajax.post('/ThesisList')
+//上传paper
+export const reqUploadPaper =(value) => ajax.post('/paper_upload',{value})
+// 显示tpaper列表
+export const reqPaperList = () => ajax.post('/paper_list')
+
+//上传ppt
+export const reqUploadPpt =(value) => ajax.post('/ppt_upload',{value})
+// 显示ppt列表
+export const reqPptList = () => ajax.post('/ppt_list')

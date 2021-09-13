@@ -9,6 +9,9 @@ import { Link, withRouter } from 'react-router-dom'
 // 引入配置menu文件，批量动态生成menu
 import menuList from '../../cnfig/menuConfig';
 // 这是左侧导航组件
+import menuList_1 from '../../cnfig/menuConfig_1'
+
+import memoryUtils from '../../utils/memoryUtils';
 
 const { SubMenu } = Menu;
 class LeftNav extends Component {
@@ -16,12 +19,27 @@ class LeftNav extends Component {
         theme: 'dark',
     };
 
+    // 判断当前用户是否有此item对应的权限
+    hasAuth = (item) =>{
+        // 当前用户是admin
+        const user = memoryUtils.user
+        const auth =user.user_type
+        if(auth===1){
+            return true
+        }
+        return false
+    }
+
     // 根据指定的menuList数据，生成<menuItem>和<SubMenu>数组
     getMenuNodes = (menuList) => {
         // 请求的路径
         const path = this.props.location.pathname
         // this.subKey =''
+        
+        
         return menuList.map(item => {
+            // 判断当前用户是否有此item对应的权限 
+            
             if (!item.children) {
                 return (
                     // 由于icon转化为脚本的形式，无法使用递归的方法，动态生成,只能被迫取消图标
@@ -44,6 +62,10 @@ class LeftNav extends Component {
                     this.subKey = '/files'
                     // console.log(this.subKey)
                 }
+                if(this.openKey === '/files/download'){
+                    this.subKey = '/files'
+                    // console.log(this.subKey)
+                }
                 
                 // console.log(this.openKey)
             }
@@ -57,7 +79,17 @@ class LeftNav extends Component {
     // 为第一次render（）做准备
     componentWillMount() {
         // 优先渲染节点，保证取到this保存值
-        this.menuNodes = this.getMenuNodes(menuList)
+        // 增加权限判断
+        debugger
+        const user = memoryUtils.user
+        const auth =user.user_type
+        if(auth ==='1'){
+            this.menuNodes = this.getMenuNodes(menuList_1)
+        }
+        else{
+            this.menuNodes = this.getMenuNodes(menuList)
+        }
+        
     }
 
     render() {

@@ -1,7 +1,17 @@
 import React, { Component } from 'react'
-import { Form, Upload,  Input,  Card, Button, Radio, DatePicker } from 'antd'
+import { Form, Upload,  Input,  Card, Button, DatePicker ,message} from 'antd'
 import {  InboxOutlined } from '@ant-design/icons';
+import { reqUploadPaper } from '../../api';
 
+var Minio = require('minio')
+
+var client = new Minio.Client({
+    endPoint: '127.0.0.1',
+    port: 9000,
+    useSSL: false,
+    accessKey: 'admin',
+    secretKey: '123456789'
+});
 
 const formItemLayout = {
     labelCol: {
@@ -11,9 +21,7 @@ const formItemLayout = {
         span: 14,
     },
 };
-const onFinish = (values) => {
-    console.log('Received values of form: ', values);
-};
+
 
 const normFile = (e) => {
     console.log('Upload event:', e);
@@ -21,10 +29,53 @@ const normFile = (e) => {
     if (Array.isArray(e)) {
         return e;
     }
+    return e && e.fileList;
 }
 
 export default class Paper extends Component {
+      // 上传文件
+      upload(file, callback) {
+        let fr = new FileReader();//用FileReader 读取文件流
+        fr.readAsArrayBuffer(file);
+        fr.addEventListener("loadend", e => {
+            // debugger
+            //e.target.result 就是读取到的文件流 将其转为Buffer类型即可 
+            client.putObject('photos', file.name, new Buffer(e.target.result), file.size, callback(file.name)
+            )
+        })
+    }
+     // 通过控制change函数来上传文件
+     onChange = info => {
+        // debugger
+        if (info.file.status === 'uploading') {
+            this.upload(info.file.originFileObj, res => {
+                // debugger
+                console.log(res);
+                info.file.status = 'done'
+                message.success(`${info.file.name}文件上传成功`);
+            });
+            console.log(info,info.file)
+        }
+    };
 
+    onFinish = (values) => {
+        console.log('Received values of form: ', values);
+        this.uppaper(values);
+    };
+
+    async  uppaper(data) {
+        const result = await reqUploadPaper (data);
+        console.log(result);
+       
+        if (result.state === 0) {
+      
+            message.success(result.msg)
+        }
+        else
+        {
+            message.error(result.msg)
+        }
+    }
     render() {
 
         return (
@@ -33,7 +84,7 @@ export default class Paper extends Component {
                 <Form
                     name="validate_other"
                     {...formItemLayout}
-                    onFinish={onFinish}
+                    onFinish={this.onFinish}
                     initialValues={{
                         'input-number': 3,
                         'checkbox-group': ['A', 'B'],
@@ -76,20 +127,19 @@ export default class Paper extends Component {
                         <Input />
                     </Form.Item>
 
-                    <Form.Item name="radio-group" label="文件格式"rules={[{ required: true}]} >
-                        <Radio.Group>
-                            <Radio value="a">pdf便携式文档</Radio>
-                            <Radio value="b">doc文字文档</Radio>
-                            <Radio value="c">zip压缩包</Radio>
-                        </Radio.Group>
-                    </Form.Item>
                     <Form.Item name="pub_time" label="发表时间" rules={[{ required: true}]} >
                         <DatePicker />
                     </Form.Item>
 
                     <Form.Item label="上传框"  rules={[{ required: true}]} >
                         <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
-                            <Upload.Dragger name="files" action="/upload.do" >
+                        <Upload.Dragger name="files"
+                                customRequest={() => false}
+                                onChange={this.onChange}
+                                beforeUpload={this.beforeUpload}
+                                onRemove = {false}
+                                maxCount = {1}
+                            >
                                 <p className="ant-upload-drag-icon">
                                     <InboxOutlined />
                                 </p>
