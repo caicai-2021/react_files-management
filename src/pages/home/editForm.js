@@ -40,24 +40,24 @@ function beforeUpload(file) {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
 
-      message.error('只能上传 JPG/PNG 文件!');
-    //  强制退出，解决
-      return Upload.LIST_IGNORE
+        message.error('只能上传 JPG/PNG 文件!');
+        //  强制退出，解决
+        return Upload.LIST_IGNORE
     }
     const isLt2M = file.size / 1024 / 1024 < 1;
     if (!isLt2M) {
-      message.error('图像必须小于 1MB!');
-      return Upload.LIST_IGNORE
+        message.error('图像必须小于 1MB!');
+        return Upload.LIST_IGNORE
     }
     return isJpgOrPng && isLt2M;
-  }
-  function onPreview (file) {
+}
+function onPreview(file) {
     let src = file.thumbUrl;
     const image = new Image();
     image.src = src;
     const imgWindow = window.open(src);
     imgWindow.document.write(image.outerHTML);
-  };
+};
 
 
 // 修改信息的form组件
@@ -68,7 +68,14 @@ export default class EditForm extends Component {
         previewImage: '',
         imageUrl: '',
         previewTitle: '',
-        fileList: [],
+        fileList: [
+        //     {
+        //     uid: '',
+        //     name: '',
+        //     status: '',
+        //     url: '',
+        // }
+        ],
     };
     // 目的是创造一个user，能够更新图片状态，只能从render中读取，不支持在外面生成
     //  user = memoryUtils.user
@@ -80,7 +87,7 @@ export default class EditForm extends Component {
         // 得到一个uploading的文件
         // console.log(info, info.file)
         // 进入下面的判断条件
-        
+
         if (info.file.status === 'uploading') {
             // this.setState({ loading: true });
             // getBase64(info.file.originFileObj, imageUrl =>
@@ -97,14 +104,14 @@ export default class EditForm extends Component {
         if (info.file.status === 'removed') {
             // Get this url from response in real world.
             // getBase64(info.file.originFileObj, imageUrl =>
-                this.setState({
-                    fileList:[]
-                });
+            this.setState({
+                fileList: []
+            });
             // );
         }
         // style={{ marginTop: 8 }}
     };
-    
+
     //定义一个获取值的函数
     formRef = React.createRef();
 
@@ -122,15 +129,26 @@ export default class EditForm extends Component {
         this.props.setForm(this.formRef.current.getFieldsValue())
     }
     // 首先第一步执行
-    //  componentWillMount() {
+    // componentWillMount() {
     //     // 将子组件的参数交给了父组件
     //     const user = memoryUtils.user
-    //     this.setState{(
-    //         fileList:[user.photo_data]
-    //     )}
+    //     if (user.PhotoData !== '') {
+    //         this.setState({
+    //             fileList: [{
+    //                 uid: '0',
+    //                 name: 'oh',
+    //                 status: 'done',
+    //                 url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png'
+    //             }
+    //             ]
+    //         })
+    //     }
+
+
+
     // }
     render() {
-        const { fileList} = this.state;
+        const { fileList } = this.state;
         console.log(fileList)
         const uploadButton = (
             <div>
@@ -140,6 +158,7 @@ export default class EditForm extends Component {
         );
         //感觉这个必须放在里面，放在外面无法读取
         const user = memoryUtils.user
+
 
         return (
 
@@ -164,9 +183,9 @@ export default class EditForm extends Component {
                         }
                     ]}
                 >
-                    <Input />
+                    <Input disabled />
                 </Form.Item>
-                <Form.Item
+                {/* <Form.Item
                     name="user_type"
                     label="用户类型"
                     initialValue={user.user_type}
@@ -182,7 +201,7 @@ export default class EditForm extends Component {
                         <Option value="1">老师</Option>
                         <Option value="2">学生</Option>
                     </Select>
-                </Form.Item>
+                </Form.Item> */}
                 <Form.Item
                     name="name"
                     label="姓名"
@@ -195,7 +214,21 @@ export default class EditForm extends Component {
                         },
                     ]}
                 >
-                    <Input />
+                    <Input disabled />
+                </Form.Item>
+                <Form.Item
+                    name="tutor"
+                    label="导师"
+                    initialValue={user.tutor}
+                    rules={[
+                        {
+                            required: true,
+
+                            whitespace: true,
+                        },
+                    ]}
+                >
+                    <Input disabled />
                 </Form.Item>
                 <Form.Item
                     name="mail"
@@ -341,19 +374,20 @@ export default class EditForm extends Component {
                     // ]}
                     getValueFromEvent={normFile}
                     valuePropName="fileList"
-                // wrapperCol={{ span: 12, offset: 6 }}
+                    // wrapperCol={{ span: 12, offset: 6 }}
+                    rules={[{ required: true, message: '请上传' }]}
                 >
                     <Upload
                         listType="picture-card"
                         fileList={fileList}
                         customRequest={() => false}
                         beforeUpload={beforeUpload}
-                        onPreview ={onPreview}
+                        onPreview={onPreview}
                         onChange={this.handleChange}
-                        >
+                    >
                         {this.state.fileList.length >= 1 ? null : uploadButton}
                     </Upload>
-                    
+
                 </Form.Item>
                 <Button type="primary" htmlType="submit" onClick={this.save}>
                     保存

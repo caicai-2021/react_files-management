@@ -5,6 +5,16 @@ import { SearchOutlined } from '@ant-design/icons';
 import { reqPptList } from '../../api';
 import { exportExcel } from 'xlsx-oc';
 
+var Minio = require('minio')
+
+var client = new Minio.Client({
+    endPoint: '127.0.0.1',
+    port: 9000,
+    useSSL: false,
+    accessKey: 'admin',
+    secretKey: '123456789'
+});
+
 export default class PptRe extends Component {
     constructor(props) {
         super(props);
@@ -19,6 +29,7 @@ export default class PptRe extends Component {
             selectedRows: [],
         };
     }
+
     // 复选框的设置
     onSelectChange = (selectedRowKeys, selectedRows) => {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
@@ -96,23 +107,23 @@ export default class PptRe extends Component {
     // 初始化table的所有列信息
     initColumns = () => {
         this.columns = [
-            {
-                title: '序号',
-                dataIndex: 'key',
-                width: '8%',
-                align: 'center',
-                editable: true,
-                // 可以再次渲染
-                // render:text =><a href ="javascript:;">{text}</a>
-                fixed: 'left',
-                // 筛选的内容
-                defaultSortOrder: 'descend',
-                // 升序降序排列
-                sorter: (a, b) => a.key - b.key
-                // onFilter: (value, record) => record.User_number.indexOf(value) === 0,
-                // sorter: (a, b) => a.User_number.length - b.User_number.length,
-                // // ...this.getColumnSearchProps('User_number'),
-            },
+            // {
+            //     title: '序号',
+            //     dataIndex: 'key',
+            //     width: '8%',
+            //     align: 'center',
+            //     editable: true,
+            //     // 可以再次渲染
+            //     // render:text =><a href ="javascript:;">{text}</a>
+            //     fixed: 'left',
+            //     // 筛选的内容
+            //     defaultSortOrder: 'descend',
+            //     // 升序降序排列
+            //     sorter: (a, b) => a.key - b.key
+            //     // onFilter: (value, record) => record.User_number.indexOf(value) === 0,
+            //     // sorter: (a, b) => a.User_number.length - b.User_number.length,
+            //     // // ...this.getColumnSearchProps('User_number'),
+            // },
             {
                 title: '类型',
                 dataIndex: 'type',
@@ -158,11 +169,11 @@ export default class PptRe extends Component {
                 // 升序降序排列,由于保存的不是int类型，不能排序
                 // sorter: (a, b) => a.gradu_time - b.gradu_time
             },
-            {
-                title: '文件类型',
-                dataIndex: 'file_type',
-                align: 'center',
-            },
+            // {
+            //     title: '文件类型',
+            //     dataIndex: 'file_type',
+            //     align: 'center',
+            // },
         ];
     }
     // 导出excel函数
@@ -178,7 +189,7 @@ export default class PptRe extends Component {
                 author: item.author,
                 name: item.name,
                 tutor: item.tutor,
-                descri:item.descri,
+                descri: item.descri,
                 file_name: item.file_name,
                 file_type: item.file_type,
             });
@@ -212,10 +223,10 @@ export default class PptRe extends Component {
                 k: 'time',
                 v: '展示时间'
             },
-            {
-                k: 'file_type',
-                v: '文件格式'
-            },
+            // {
+            //     k: 'file_type',
+            //     v: '文件格式'
+            // },
         ];
         const name = 'ppt提交统计表.xlsx';
         exportExcel(header, data, name);
@@ -226,10 +237,25 @@ export default class PptRe extends Component {
         this.setState({ loading: true });
         const dataSource = await reqPptList();
         this.setState({ loading: false });
-        console.log(dataSource);
+        // console.log(dataSource);
         this.setState({
             dataSource
         })
+    }
+    // 下载函数
+    download = () => {
+        // console.log(file)
+        const { selectedRows } = this.state
+        for (let index = 0; index < selectedRows.length; index++) {
+            const element = selectedRows[index];
+            const file = element.file_name
+            client.presignedGetObject('photos', file, 24 * 60 * 60, function (err, presignedUrl) {
+                if (err) return console.log(err)
+                console.log(presignedUrl)
+                // debugger
+                window.open(presignedUrl)
+            })
+        }
     }
 
     componentWillMount() {
@@ -259,6 +285,9 @@ export default class PptRe extends Component {
         return (
             <div className="info">
                 <Card title="索引" extra={[
+                    <Button className="button-2" type="primary" disabled={!hasSelected} loading={loading} onClick={this.download}>
+                        下载
+                    </Button>,
                     <Button className="button-2" type="primary" disabled={!hasSelected} loading={loading} onClick={this.outexcel}>
                         导出
                     </Button>,
@@ -274,6 +303,7 @@ export default class PptRe extends Component {
                             columns={this.columns}
                             // 复选框设置
                             rowSelection={rowSelection}
+                            // key = ''
                             // 数据等待界面
                             loading={loading}
                             // 分页的配置

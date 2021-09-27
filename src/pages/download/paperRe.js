@@ -5,6 +5,18 @@ import { SearchOutlined } from '@ant-design/icons';
 import { reqPaperList } from '../../api';
 import { exportExcel } from 'xlsx-oc';
 
+
+    
+var Minio = require('minio')
+
+var client = new Minio.Client({
+    endPoint: '127.0.0.1',
+    port: 9000,
+    useSSL: false,
+    accessKey: 'admin',
+    secretKey: '123456789'
+});
+
 export default class PaperRe extends Component {
     constructor(props) {
         super(props);
@@ -22,7 +34,7 @@ export default class PaperRe extends Component {
     // 复选框的设置
     onSelectChange = (selectedRowKeys, selectedRows) => {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-        this.setState({ selectedRowKeys,selectedRows });
+        this.setState({ selectedRowKeys, selectedRows });
     };
 
     // 搜索的函数
@@ -96,23 +108,23 @@ export default class PaperRe extends Component {
     // 初始化table的所有列信息
     initColumns = () => {
         this.columns = [
-            {
-                title: '序号',
-                dataIndex: 'key',
-                width: '8%',
-                align: 'center',
-                editable: true,
-                // 可以再次渲染
-                // render:text =><a href ="javascript:;">{text}</a>
-                fixed: 'left',
-                // 筛选的内容
-                // defaultSortOrder: 'descend',
-                // 升序降序排列
-                sorter: (a, b) => a.key - b.key
-                // onFilter: (value, record) => record.User_number.indexOf(value) === 0,
-                // sorter: (a, b) => a.User_number.length - b.User_number.length,
-                // // ...this.getColumnSearchProps('User_number'),
-            },
+            // {
+            //     title: '序号',
+            //     dataIndex: 'key',
+            //     width: '8%',
+            //     align: 'center',
+            //     editable: true,
+            //     // 可以再次渲染
+            //     // render:text =><a href ="javascript:;">{text}</a>
+            //     fixed: 'left',
+            //     // 筛选的内容
+            //     // defaultSortOrder: 'descend',
+            //     // 升序降序排列
+            //     sorter: (a, b) => a.key - b.key
+            //     // onFilter: (value, record) => record.User_number.indexOf(value) === 0,
+            //     // sorter: (a, b) => a.User_number.length - b.User_number.length,
+            //     // // ...this.getColumnSearchProps('User_number'),
+            // },
             {
                 title: '期刊名',
                 dataIndex: 'paper_name',
@@ -181,11 +193,11 @@ export default class PaperRe extends Component {
                 // 升序降序排列,由于保存的不是int类型，不能排序
                 // sorter: (a, b) => a.gradu_time - b.gradu_time
             },
-            {
-                title: '文件格式',
-                dataIndex: 'file_type',
-                align: 'center',
-            },
+            // {
+            //     title: '文件格式',
+            //     dataIndex: 'file_type',
+            //     align: 'center',
+            // },
         ];
     }
     // 导出excel函数
@@ -196,17 +208,17 @@ export default class PaperRe extends Component {
             const item = selectedRows[i];
             data.push({
                 key: i,
-                paper_name:item.paper_name,
-                paper_number:item.paper_number,
-                nameCN:item.nameCN,
-                nameEN:item.nameEN,
-                first_author:item.first_author,
-                first_ack:item.first_ack,
-                Co_author:item.first_author,
+                paper_name: item.paper_name,
+                paper_number: item.paper_number,
+                nameCN: item.nameCN,
+                nameEN: item.nameEN,
+                first_author: item.first_author,
+                first_ack: item.first_ack,
+                Co_author: item.first_author,
                 authors: item.authors,
                 tutor: item.tutor,
                 file_name: item.file_name,
-                pub_time:item.pub_time,
+                pub_time: item.pub_time,
                 file_type: item.file_type,
             });
         }
@@ -240,28 +252,28 @@ export default class PaperRe extends Component {
                 v: '共同作者'
             },
             {
-                k:'authors',
-                v:'所有作者'
+                k: 'authors',
+                v: '所有作者'
             },
             {
-                k:'tutor',
-                v:'导师'
+                k: 'tutor',
+                v: '导师'
             },
             {
-                k:'file_name',
-                v:'文件提交名称'
+                k: 'file_name',
+                v: '文件提交名称'
             },
             {
-                k:'pub_time',
-                v:'发表时间'
+                k: 'pub_time',
+                v: '发表时间'
             },
-            {
-                k:'file_type',
-                v:'文件格式'
-            },
+            // {
+            //     k:'file_type',
+            //     v:'文件格式'
+            // },
         ];
-        const name ='文章提交统计表.xlsx';
-        exportExcel(header,data,name);
+        const name = '文章提交统计表.xlsx';
+        exportExcel(header, data, name);
     }
     // 数据源请求函数
     getdata = async () => {
@@ -273,6 +285,22 @@ export default class PaperRe extends Component {
         this.setState({
             dataSource
         })
+    }
+
+     // 下载函数
+     download = () => {
+        // console.log(file)
+        const { selectedRows } = this.state
+        for (let index = 0; index < selectedRows.length; index++) {
+            const element = selectedRows[index];
+            const file = element.file_name
+            client.presignedGetObject('photos', file, 24 * 60 * 60, function (err, presignedUrl) {
+                if (err) return console.log(err)
+                console.log(presignedUrl)
+                // debugger
+                window.open(presignedUrl)
+            })
+        }
     }
 
     componentWillMount() {
@@ -302,6 +330,9 @@ export default class PaperRe extends Component {
         return (
             <div className="info">
                 <Card title="索引" extra={[
+                      <Button className="button-2" type="primary" disabled={!hasSelected} loading={loading} onClick={this.download}>
+                        下载
+                    </Button>,
                     <Button className="button-2" type="primary" disabled={!hasSelected} loading={loading} onClick={this.outexcel}>
                         导出
                     </Button>,

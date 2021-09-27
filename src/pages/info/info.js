@@ -1,19 +1,19 @@
 import React, { Component } from 'react'
 // import { useContext, useState, useEffect, useRef } from 'react';
-import { Table, Input, Button, Card, message, Space } from 'antd';
+import { Table, Input, Button, Card, message, Space, Modal } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 import './info.css'
 import { exportExcel } from 'xlsx-oc';
 
 // 引入数据源请求
-import { reqList } from '../../api';
+import { reqAuth, reqList } from '../../api';
 // 引入储存组件备用
 
 import { reqDel } from '../../api';
 
-
-
+import LinkButton from '../../components/link-button';
+import EditAuth from './editAuth';
 export default class Info extends Component {
     constructor(props) {
         super(props);
@@ -26,12 +26,13 @@ export default class Info extends Component {
             searchText: '',
             searchedColumn: '',
             selectedRows: [],
+            showStatus: 0,
         };
     }
     // 复选框的设置
     onSelectChange = (selectedRowKeys, selectedRows) => {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-        this.setState({ selectedRowKeys,selectedRows });
+        this.setState({ selectedRowKeys, selectedRows });
     };
 
     onDelect = async () => {
@@ -40,6 +41,8 @@ export default class Info extends Component {
         const result = await reqDel(selectedRowKeys)
         if (result.status === 0) {
             message.success('删除成功')
+            // 刷新页面
+            window.location.reload()
         }
     }
 
@@ -140,18 +143,45 @@ export default class Info extends Component {
                 sorter: (a, b) => a.User_number.length - b.User_number.length,
                 // ...this.getColumnSearchProps('User_number'),
             },
-            // {
-            //     title: '类型',
-            //     dataIndex: 'User_type',
-            //     // defaultSortOrder: 'descend',
-            //     // sorter: (a, b) => a.User_type - b.User_type,
-            // },
+            {
+                title: '类型',
+                dataIndex: 'User_type',
+                align: 'center',
+                fixed: 'left',
+                defaultSortOrder: 'descend',
+                width: '8%',
+                sorter: (a, b) => a.User_type - b.User_type,
+                render: (text) => {
+                    if (text === 0) {
+                        return '管理员'
+                    }
+                    if (text === 1) {
+                        return '用户'
+                    }
+                    if (text === 2) {
+                        return '待审核'
+                    }
+                    if (text === 3) {
+                        return '已离开'
+                    }
+                }
+
+            },
             {
                 title: '姓名',
                 dataIndex: 'Name',
                 fixed: 'left',
                 ...this.getColumnSearchProps('Name'),
                 align: 'center',
+
+            },
+            {
+                title: '导师',
+                dataIndex: 'Tutor',
+                fixed: 'left',
+                ...this.getColumnSearchProps('Tutor'),
+                align: 'center',
+
             },
             {
                 title: '居住地',
@@ -185,6 +215,16 @@ export default class Info extends Component {
                 dataIndex: 'Createtime',
                 align: 'center',
             },
+            {
+                title: '操作',
+                align: 'center',
+                fixed: 'right',
+                width: '5%',
+                render: (text, record, index) => <LinkButton onClick={() => {
+                    this.text = record//保存当前信息，保证其他地方可以看到
+                    this.setState({ showStatus: 1 })
+                }}>设置</LinkButton>
+            }
         ];
     }
     // 导出excel函数
@@ -198,9 +238,9 @@ export default class Info extends Component {
                 User_number: item.User_number,
                 Name: item.Name,
                 Gender: item.Gender,
-                Dorm:item.Dorm,
-                Residence:item.Residence,
-                Office:item.Office,
+                Dorm: item.Dorm,
+                Residence: item.Residence,
+                Office: item.Office,
                 Mail: item.Mail,
                 Phone: item.Phone,
                 Create_time: item.Createtime,
@@ -259,7 +299,35 @@ export default class Info extends Component {
             dataSource
         })
     }
+    // 点击确定的回调：去添加或修改
+   
+   // 点击确定的回调：去添加或修改
+   handleOk = async () => {
+    // 获取数据，子组件传数据给父组件，重难点
+    // this.form就得到了form组件的数据
+    console.log(this.form)
+    // 发修改信息的请求
+    const type=this.form.user_type
+    const number = this.text.User_number
+    console.log(type,number)
+    const result = await reqAuth({type, number})
+    this.setState({ showStatus: 0 })
+    // 根据请求结果，做不同处理提示
+    if (result.state === 0) {
+        message.success('权限设置成功')
+        // this.props.history.replace("/")
+    }
+    else {
+        message.error('修改信息失败')
+    }
+}
 
+    // 点击取消的回调：状态隐藏
+    handleCancel = () => {
+        this.setState({
+            showStatus: 0
+        })
+    }
 
     componentWillMount() {
         this.initColumns()
@@ -272,7 +340,10 @@ export default class Info extends Component {
 
     render() {
         // 取出状态数据 
-        const { dataSource, loading, selectedRowKeys } = this.state;
+        const { dataSource, loading, selectedRowKeys, showStatus } = this.state;
+        // 读取更新的属性名
+        const text = this.text || {}
+        console.log(text)
         const rowSelection = {
             selectedRowKeys,
             onChange: this.onSelectChange,
@@ -291,12 +362,8 @@ export default class Info extends Component {
                 <Card title="梯队成员" extra={[
                     <Button
                         className="button-1"
-                        onClick={this.onDelect} type="primary">
+                        onClick={this.onDelect} disabled={!hasSelected} >
                         删除
-                    </Button>,
-                    <Button
-                        className="button-2">
-                        保存
                     </Button>,
                     <Button className="button-2" type="primary" disabled={!hasSelected} loading={loading} onClick={this.outexcel}>
                         导出
@@ -305,6 +372,15 @@ export default class Info extends Component {
                         {hasSelected ? `已选 ${selectedRowKeys.length} 条` : ''}
                     </span>,
                 ]}>
+                    <Modal
+                        title="权限设置"
+                        visible={showStatus !== 0}
+                        onOk={this.handleOk}
+                        onCancel={this.handleCancel}>
+                        {/* 将子组件传递过来的form对象保存到当前父组件对象，重难点 
+                        传递一个接收值的函数，子组件传一个value，父组件得到一个value，将子组件传递来的对象，存到父组件上*/}
+                        <EditAuth setForm={form => this.form = form} type={text.User_type} />
+                    </Modal>
                     <div>
                         <Table
                             // 边框

@@ -68,7 +68,7 @@ export default class Home extends Component {
         const { showStatus } = this.state
         return (
             <div className='home'>
-                <Card title="编辑和保存" extra={
+                <Card title="详情展示" extra={
                     <Button
                         type="primary"
                         style={{
@@ -90,14 +90,14 @@ export default class Home extends Component {
                         传递一个接收值的函数，子组件传一个value，父组件得到一个value，将子组件传递来的对象，存到父组件上*/}
                         <EditForm setForm={form => this.form = form} />
                     </Modal>
-                    <Descriptions  >
+                    <Descriptions  bordered>
                         <Descriptions.Item label="姓名">{user.name}</Descriptions.Item>
                         <Descriptions.Item label="学号">{user.user_number}</Descriptions.Item>
                         <Descriptions.Item label="头像">
                             <Avatar shape="square" size={64} src={<Image src={user.photo_data} />} />
                         </Descriptions.Item>
                         <Descriptions.Item label="性别">{user.gender}</Descriptions.Item>
-
+                        <Descriptions.Item label="导师">{user.tutor}</Descriptions.Item>
 
                         <Descriptions.Item label="邮箱">{user.mail}</Descriptions.Item>
                         <Descriptions.Item label="办公位置">{user.office}</Descriptions.Item>

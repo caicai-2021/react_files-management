@@ -10,6 +10,7 @@ import { Link, withRouter } from 'react-router-dom'
 import menuList from '../../cnfig/menuConfig';
 // 这是左侧导航组件
 import menuList_1 from '../../cnfig/menuConfig_1'
+import menuList_2 from '../../cnfig/menuConfig_2';
 
 import memoryUtils from '../../utils/memoryUtils';
 
@@ -80,11 +81,14 @@ class LeftNav extends Component {
     componentWillMount() {
         // 优先渲染节点，保证取到this保存值
         // 增加权限判断
-        debugger
+        // debugger
         const user = memoryUtils.user
         const auth =user.user_type
         if(auth ==='1'){
             this.menuNodes = this.getMenuNodes(menuList_1)
+        }
+        if(auth ==='2'){
+            this.menuNodes = this.getMenuNodes(menuList_2)
         }
         else{
             this.menuNodes = this.getMenuNodes(menuList)

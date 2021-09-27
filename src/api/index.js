@@ -72,3 +72,10 @@ export const reqPaperList = () => ajax.post('/paper_list')
 export const reqUploadPpt =(value) => ajax.post('/ppt_upload',{value})
 // 显示ppt列表
 export const reqPptList = () => ajax.post('/ppt_list')
+
+// 修改用户权限
+export const reqAuth =({type,number}) => ajax.post('/Auth',{type,number})
+
+export const reqTyper =() => ajax.get('/type_user')
+
+export const reqTimer =() => ajax.get ('/date_list')

@@ -5,6 +5,15 @@ import { SearchOutlined } from '@ant-design/icons';
 import { reqThesisList } from '../../api';
 import { exportExcel } from 'xlsx-oc';
 
+var Minio = require('minio')
+
+var client = new Minio.Client({
+    endPoint: '127.0.0.1',
+    port: 9000,
+    useSSL: false,
+    accessKey: 'admin',
+    secretKey: '123456789'
+});
 export default class ThesisRe extends Component {
     constructor(props) {
         super(props);
@@ -96,23 +105,23 @@ export default class ThesisRe extends Component {
     // 初始化table的所有列信息
     initColumns = () => {
         this.columns = [
-            {
-                title: '序号',
-                dataIndex: 'key',
-                width: '8%',
-                align: 'center',
-                editable: true,
-                // 可以再次渲染
-                // render:text =><a href ="javascript:;">{text}</a>
-                fixed: 'left',
-                // 筛选的内容
-                defaultSortOrder: 'descend',
-                // 升序降序排列
-                sorter: (a, b) => a.key - b.key
-                // onFilter: (value, record) => record.User_number.indexOf(value) === 0,
-                // sorter: (a, b) => a.User_number.length - b.User_number.length,
-                // // ...this.getColumnSearchProps('User_number'),
-            },
+            // {
+            //     title: '序号',
+            //     dataIndex: 'key',
+            //     width: '8%',
+            //     align: 'center',
+            //     editable: true,
+            //     // 可以再次渲染
+            //     // render:text =><a href ="javascript:;">{text}</a>
+            //     fixed: 'left',
+            //     // 筛选的内容
+            //     defaultSortOrder: 'descend',
+            //     // 升序降序排列
+            //     sorter: (a, b) => a.key - b.key
+            //     // onFilter: (value, record) => record.User_number.indexOf(value) === 0,
+            //     // sorter: (a, b) => a.User_number.length - b.User_number.length,
+            //     // // ...this.getColumnSearchProps('User_number'),
+            // },
             {
                 title: '作者',
                 dataIndex: 'author',
@@ -146,11 +155,11 @@ export default class ThesisRe extends Component {
                 // 升序降序排列,由于保存的不是int类型，不能排序
                 // sorter: (a, b) => a.gradu_time - b.gradu_time
             },
-            {
-                title: '文件类型',
-                dataIndex: 'type',
-                align: 'center',
-            },
+            // {
+            //     title: '文件类型',
+            //     dataIndex: 'type',
+            //     align: 'center',
+            // },
         ];
     }
     // 导出excel函数
@@ -190,10 +199,10 @@ export default class ThesisRe extends Component {
                 k:'gradu_time',
                 v:'毕业时间'
             },
-            {
-                k:'type',
-                v:'文件类型'
-            },
+            // {
+            //     k:'type',
+            //     v:'文件类型'
+            // },
         ];
         const name ='论文提交统计表.xlsx';
         exportExcel(header,data,name);
@@ -208,6 +217,23 @@ export default class ThesisRe extends Component {
         this.setState({
             dataSource
         })
+    }
+
+    
+     // 下载函数
+     download = () => {
+        // console.log(file)
+        const { selectedRows } = this.state
+        for (let index = 0; index < selectedRows.length; index++) {
+            const element = selectedRows[index];
+            const file = element.file_name
+            client.presignedGetObject('photos', file, 24 * 60 * 60, function (err, presignedUrl) {
+                if (err) return console.log(err)
+                console.log(presignedUrl)
+                // debugger
+                window.open(presignedUrl)
+            })
+        }
     }
 
     componentWillMount() {
@@ -237,6 +263,9 @@ export default class ThesisRe extends Component {
         return (
             <div className="info">
                 <Card title="索引" extra={[
+                      <Button className="button-2" type="primary" disabled={!hasSelected} loading={loading} onClick={this.download}>
+                        下载
+                    </Button>,
                     <Button className="button-2" type="primary" disabled={!hasSelected} loading={loading} onClick={this.outexcel}>
                         导出
                     </Button>,

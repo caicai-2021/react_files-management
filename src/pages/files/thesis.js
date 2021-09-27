@@ -64,6 +64,7 @@ export default class Thesis extends Component {
    onFinish = (values) => {
         console.log('Received values of form: ', values);
         this.upthesis(values);
+        this.props.history.replace("/result")
     };
 
     async  upthesis(data) {
@@ -119,7 +120,7 @@ export default class Thesis extends Component {
                     </Form.Item>
 
                     <Form.Item label="上传框" rules={[{ required: true }]} >
-                        <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
+                        <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile}  rules={[{ required: true,message:'请上传'}]}>
                             <Upload.Dragger name="files"
                                 customRequest={() => false}
                                 onChange={this.onChange}

@@ -27,7 +27,8 @@ import PPT from '../files/ppt';
 import PptRe from '../download/pptRe';
 import ThesisRe from '../download/thesisRe';
 import PaperRe from '../download/paperRe';
-
+import Result_manage from './result';
+import Wait from './wait';
 
 const { Footer, Sider, Content } = Layout;
 
@@ -69,6 +70,8 @@ export default class Admin extends Component {
                             <Route path='/files/download/paper' component={PaperRe} />
                             <Route path='/files/download/thesis' component={ThesisRe} />
                             <Route path='/files/download/ppt' component={PptRe} />
+                            <Route path='/result' component={Result_manage} />
+                            <Route path='/wait' component={Wait} />
                             <Redirect to='/home' />
                         </Switch>
                     </Content>

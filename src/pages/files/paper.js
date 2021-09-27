@@ -61,6 +61,7 @@ export default class Paper extends Component {
     onFinish = (values) => {
         console.log('Received values of form: ', values);
         this.uppaper(values);
+        this.props.history.replace("/result")
     };
 
     async  uppaper(data) {
@@ -131,8 +132,8 @@ export default class Paper extends Component {
                         <DatePicker />
                     </Form.Item>
 
-                    <Form.Item label="上传框"  rules={[{ required: true}]} >
-                        <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
+                    <Form.Item label="上传框"   >
+                        <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile} rules={[{ required: true,message:'请上传'}]}>
                         <Upload.Dragger name="files"
                                 customRequest={() => false}
                                 onChange={this.onChange}
