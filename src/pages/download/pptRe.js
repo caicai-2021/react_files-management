@@ -8,7 +8,7 @@ import { exportExcel } from 'xlsx-oc';
 var Minio = require('minio')
 
 var client = new Minio.Client({
-    endPoint: '127.0.0.1',
+    endPoint: '10.23.197.77',
     port: 9000,
     useSSL: false,
     accessKey: 'admin',
@@ -129,7 +129,7 @@ export default class PptRe extends Component {
                 dataIndex: 'type',
                 defaultSortOrder: 'descend',
                 align: 'center',
-                ...this.getColumnSearchProps('author'),
+                ...this.getColumnSearchProps('type'),
             },
             {
                 title: '作者',

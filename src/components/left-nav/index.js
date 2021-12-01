@@ -84,13 +84,15 @@ class LeftNav extends Component {
         // debugger
         const user = memoryUtils.user
         const auth =user.user_type
+        console.log(auth)
         if(auth ==='1'){
             this.menuNodes = this.getMenuNodes(menuList_1)
         }
-        if(auth ==='2'){
+        if(auth ==='2'||auth === '4'){
             this.menuNodes = this.getMenuNodes(menuList_2)
         }
-        else{
+        if (auth ==='0')
+        {
             this.menuNodes = this.getMenuNodes(menuList)
         }
         

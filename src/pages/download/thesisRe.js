@@ -8,7 +8,7 @@ import { exportExcel } from 'xlsx-oc';
 var Minio = require('minio')
 
 var client = new Minio.Client({
-    endPoint: '127.0.0.1',
+    endPoint: '10.23.197.77',
     port: 9000,
     useSSL: false,
     accessKey: 'admin',
@@ -31,7 +31,7 @@ export default class ThesisRe extends Component {
     // 复选框的设置
     onSelectChange = (selectedRowKeys, selectedRows) => {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-        this.setState({ selectedRowKeys,selectedRows });
+        this.setState({ selectedRowKeys, selectedRows });
     };
 
     // 搜索的函数
@@ -174,7 +174,7 @@ export default class ThesisRe extends Component {
                 name: item.name,
                 tutor: item.tutor,
                 file_name: item.file_name,
-                gradu_time:item.gradu_time,
+                gradu_time: item.gradu_time,
                 type: item.type,
             });
         }
@@ -184,28 +184,28 @@ export default class ThesisRe extends Component {
                 v: '作者'
             },
             {
-                k:'name',
-                v:'论文名称'
+                k: 'name',
+                v: '论文名称'
             },
             {
-                k:'tutor',
-                v:'导师'
+                k: 'tutor',
+                v: '导师'
             },
             {
-                k:'file_name',
-                v:'文件提交名称'
+                k: 'file_name',
+                v: '文件提交名称'
             },
             {
-                k:'gradu_time',
-                v:'毕业时间'
+                k: 'gradu_time',
+                v: '毕业时间'
             },
             // {
             //     k:'type',
             //     v:'文件类型'
             // },
         ];
-        const name ='论文提交统计表.xlsx';
-        exportExcel(header,data,name);
+        const name = '论文提交统计表.xlsx';
+        exportExcel(header, data, name);
     }
     // 数据源请求函数
     getdata = async () => {
@@ -219,9 +219,9 @@ export default class ThesisRe extends Component {
         })
     }
 
-    
-     // 下载函数
-     download = () => {
+
+    // 下载函数
+    download = () => {
         // console.log(file)
         const { selectedRows } = this.state
         for (let index = 0; index < selectedRows.length; index++) {
@@ -263,7 +263,7 @@ export default class ThesisRe extends Component {
         return (
             <div className="info">
                 <Card title="索引" extra={[
-                      <Button className="button-2" type="primary" disabled={!hasSelected} loading={loading} onClick={this.download}>
+                    <Button className="button-2" type="primary" disabled={!hasSelected} loading={loading} onClick={this.download}>
                         下载
                     </Button>,
                     <Button className="button-2" type="primary" disabled={!hasSelected} loading={loading} onClick={this.outexcel}>

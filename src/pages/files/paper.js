@@ -6,7 +6,7 @@ import { reqUploadPaper } from '../../api';
 var Minio = require('minio')
 
 var client = new Minio.Client({
-    endPoint: '127.0.0.1',
+    endPoint: '10.23.197.77',
     port: 9000,
     useSSL: false,
     accessKey: 'admin',

@@ -48,7 +48,7 @@ export default class Home extends Component {
             // const user = memoryUtils.user
             // this.setState({user:{user}})
             message.success('修改信息成功')
-            // this.props.history.replace("/")
+            this.props.history.replace("/")
         }
         else {
             message.error('修改信息失败')
